@@ -15,10 +15,13 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB Connected via .env.local'))
   .catch(err => console.log(err));
 
-// Define Task Schema
+// 1. UPDATED: Define Task Schema with new fields
 const TaskSchema = new mongoose.Schema({
-  title: String,
-  status: { type: String, default: 'Pending' }
+  title: { type: String, required: true },
+  status: { type: String, default: 'Pending' },
+  category: { type: String, default: 'University' },
+  priority: { type: String, default: 'Medium' },
+  dueDate: { type: Date }
 });
 const Task = mongoose.model('Task', TaskSchema);
 
@@ -28,8 +31,14 @@ app.get('/api/tasks', async (req, res) => {
   res.json(tasks);
 });
 
+// 2. UPDATED: POST route to handle the new frontend data
 app.post('/api/tasks', async (req, res) => {
-  const newTask = new Task({ title: req.body.title });
+  const newTask = new Task({ 
+    title: req.body.title,
+    category: req.body.category,
+    priority: req.body.priority,
+    dueDate: req.body.dueDate
+  });
   await newTask.save();
   res.json(newTask);
 });
